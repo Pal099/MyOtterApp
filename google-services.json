@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1079067025448",
+    "project_id": "myotterapp-d073e",
+    "storage_bucket": "myotterapp-d073e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1079067025448:android:3ced2ba014c90b53f8d51d",
+        "android_client_info": {
+          "package_name": "MyOtterApp.com"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDLmCnRLWOEPTB29lak2h0YMw_xK9vT5M0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

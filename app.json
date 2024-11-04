@@ -4,7 +4,7 @@
     "slug": "MyOtterApp",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/logo_otter_soft_4.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
@@ -18,10 +18,16 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.pablo99.MyOtterApp"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/logo_otter_soft_4.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "5036ecaa-d971-432c-bd4a-04df873d35f4"
+      }
     }
   }
 }
