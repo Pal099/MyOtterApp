@@ -1,87 +1,101 @@
-import React, { useState } from 'react';
-import { View, Text, Button, FlatList, Image, Alert, StyleSheet } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Button, FlatList, Alert, StyleSheet, TouchableOpacity } from 'react-native';
 import * as Location from 'expo-location';
+import { db } from '../firebaseConfig'; // Asegúrate de que la ruta sea correcta
+import { collection, addDoc, getDocs, deleteDoc, doc } from 'firebase/firestore';
 
 export default function Ubicaciones() {
   const [ubicaciones, setUbicaciones] = useState([]);
 
-  const handleTakePhoto = async () => {
-    // Solicitar permisos de ubicación
+  // Función para cargar las ubicaciones de Firestore al iniciar
+  const loadUbicaciones = async () => {
+    const ubicacionesCollection = collection(db, 'ubicaciones');
+    const ubicacionesSnapshot = await getDocs(ubicacionesCollection);
+    const ubicacionesList = ubicacionesSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    setUbicaciones(ubicacionesList);
+  };
+
+  useEffect(() => {
+    loadUbicaciones();
+  }, []);
+
+  const handleAddUbicacion = async () => {
     const { status: locationStatus } = await Location.requestForegroundPermissionsAsync();
     if (locationStatus !== 'granted') {
       Alert.alert('Permiso denegado', 'Es necesario el permiso para acceder a la ubicación.');
       return;
     }
 
-    // Solicitar permisos de cámara
-    const { status: cameraStatus } = await ImagePicker.requestCameraPermissionsAsync();
-    if (cameraStatus !== 'granted') {
-      Alert.alert('Permiso denegado', 'Es necesario el permiso para usar la cámara.');
-      return;
+    const location = await Location.getCurrentPositionAsync({});
+    const { latitude, longitude } = location.coords;
+
+    // Obtener la dirección a partir de la latitud y longitud
+    const reverseGeocode = await Location.reverseGeocodeAsync({ latitude, longitude });
+    const address = reverseGeocode[0];
+    const locationInfo = `${address.name || ''}, ${address.street || 'Sin calle'}, ${address.city || ''}, ${address.region || ''}`;
+
+    // Obtener la fecha y hora actuales
+    const date = new Date();
+    const dateString = date.toLocaleDateString();
+    const timeString = date.toLocaleTimeString();
+
+    const newUbicacion = {
+      locationInfo, // Usar la dirección en lugar de latitud y longitud
+      date: dateString,
+      time: timeString,
+    };
+
+    // Guardar en Firestore
+    try {
+      const docRef = await addDoc(collection(db, 'ubicaciones'), newUbicacion);
+      newUbicacion.id = docRef.id; // Añadir el ID del documento
+      setUbicaciones(prevUbicaciones => [...prevUbicaciones, newUbicacion]);
+      Alert.alert('Ubicación guardada', 'La ubicación se ha guardado correctamente.');
+    } catch (error) {
+      Alert.alert('Error', 'No se pudo guardar la ubicación en la base de datos.');
+      console.error("Error añadiendo documento: ", error);
     }
+  };
 
-    // Tomar la foto
-    const result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 1, // Puedes ajustar la calidad de la imagen
-    });
-
-    // Verifica si la foto fue tomada
-    if (!result.cancelled) {
-      // Obtener la ubicación actual
-      const location = await Location.getCurrentPositionAsync({});
-      const { latitude, longitude } = location.coords;
-
-      // Convertir las coordenadas en una dirección
-      const reverseGeocode = await Location.reverseGeocodeAsync({
-        latitude,
-        longitude
-      });
-
-      const address = reverseGeocode[0];
-      const locationInfo = `${address.street || 'Sin calle'}, ${address.city || ''}, ${address.region || ''}`;
-
-      // Obtener la fecha y la hora actuales
-      const date = new Date();
-      const dateString = date.toLocaleDateString();
-      const timeString = date.toLocaleTimeString();
-
-      // Guardar la foto con la información
-      setUbicaciones((prevUbicaciones) => [
-        ...prevUbicaciones,
-        {
-          uri: result.uri, // URI de la imagen
-          locationInfo,
-          date: dateString,
-          time: timeString,
-          latitude,
-          longitude
-        }
-      ]);
-    } else {
-      Alert.alert('No se tomó la foto', 'Por favor, intenta tomar una foto para registrar la ubicación.');
+  const handleDeleteUbicacion = async (id) => {
+    try {
+      await deleteDoc(doc(db, 'ubicaciones', id));
+      setUbicaciones(prevUbicaciones => prevUbicaciones.filter(ubicacion => ubicacion.id !== id));
+      Alert.alert('Ubicación eliminada', 'La ubicación se ha eliminado correctamente.');
+    } catch (error) {
+      Alert.alert('Error', 'No se pudo eliminar la ubicación.');
+      console.error("Error eliminando documento: ", error);
     }
+  };
+
+  const handleEditUbicacion = (ubicacion) => {
+    // Aquí puedes implementar la lógica para editar una ubicación
+    Alert.alert('Editar Ubicación', `Ubicación actual: ${ubicacion.locationInfo}`);
+    // Implementa la lógica para modificar la ubicación
   };
 
   return (
     <View style={styles.container}>
-      <Button title="Tomar Foto" onPress={handleTakePhoto} />
+      <Button title="Agregar Ubicación" onPress={handleAddUbicacion} />
       <FlatList
         data={ubicaciones}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={styles.locationCard}>
-            {item.uri ? (  // Asegúrate de que se use la URI correcta
-              <Image source={{ uri: item.uri }} style={styles.image} />
-            ) : (
-              <Text style={styles.errorText}>Imagen no disponible</Text>
-            )}
             <Text>Ubicación: {item.locationInfo}</Text>
             <Text>Fecha: {item.date}</Text>
             <Text>Hora: {item.time}</Text>
-            <Text>Latitud: {item.latitude}</Text>
-            <Text>Longitud: {item.longitude}</Text>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity onPress={() => handleEditUbicacion(item)} style={styles.button}>
+                <Text style={styles.buttonText}>Editar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => handleDeleteUbicacion(item.id)} style={styles.button}>
+                <Text style={styles.buttonText}>Eliminar</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         )}
       />
@@ -102,15 +116,20 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     elevation: 4,
   },
-  image: {
-    width: '100%',
-    height: 200,
-    borderRadius: 8,
-    marginBottom: 8,
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
-  errorText: {
-    color: 'red',
+  button: {
+    backgroundColor: '#007BFF',
+    borderRadius: 4,
+    padding: 8,
+    marginTop: 10,
+    flex: 1,
+    marginHorizontal: 5,
+  },
+  buttonText: {
+    color: '#fff',
     textAlign: 'center',
-    marginVertical: 8,
   },
 });

@@ -13,6 +13,7 @@ export default function Modificacion() {
   const [apellido, setApellido] = useState(demandado.apellido_demandado);
   const [domicilio, setDomicilio] = useState(demandado.domicilio_demandado);
   const [nombreAbogado, setNombreAbogado] = useState(demandado.nombre_abogado);
+  const [ubicacion, setubicacion] = useState(demandado.ubicacion);
   const [estado, setEstado] = useState(demandado.estado);
 
   const actualizarDemandado = async () => {
@@ -27,6 +28,7 @@ export default function Modificacion() {
         apellido_demandado: apellido,
         domicilio_demandado: domicilio,
         nombre_abogado: nombreAbogado,
+        ubicacion: ubicacion,
         estado: estado,
       });
 
@@ -41,19 +43,19 @@ export default function Modificacion() {
   return (
     <View style={styles.container}>
       <TextInput
-        placeholder="Nombre"
+        placeholder="Nombre del demandado"
         value={nombre}
         onChangeText={setNombre}
         style={styles.input}
       />
       <TextInput
-        placeholder="Apellido"
+        placeholder="Apellido del demandado"
         value={apellido}
         onChangeText={setApellido}
         style={styles.input}
       />
       <TextInput
-        placeholder="Domicilio"
+        placeholder="Domicilio del demandado"
         value={domicilio}
         onChangeText={setDomicilio}
         style={styles.input}

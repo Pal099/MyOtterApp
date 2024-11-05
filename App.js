@@ -26,7 +26,7 @@ function MyStack({ isLoggedIn }) {
           <Stack.Screen name="Demandados" component={Demandados} />
           <Stack.Screen name="Ubicaciones" component={Ubicaciones} />
           <Stack.Screen name="Modificaciones" component={Modificacion} />
-          <Stack.Screen name="Registros" component={Registro} />
+          <Stack.Screen name ="registro" component={Registro}/>
 
 
         </>

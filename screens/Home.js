@@ -2,7 +2,8 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { auth } from '../firebaseConfig'; // Asegúrate de que esta línea sea correcta
+import { MaterialIcons } from '@expo/vector-icons';
+import { auth } from '../firebaseConfig';
 
 export default function Home() {
   const navigation = useNavigation();
@@ -11,7 +12,7 @@ export default function Home() {
     auth.signOut()
       .then(() => {
         Alert.alert('Cerrar Sesión', 'Has cerrado sesión exitosamente.');
-        navigation.navigate('Login'); // Redirigir a la pantalla de inicio de sesión
+        navigation.navigate('Login');
       })
       .catch(error => {
         Alert.alert('Error', error.message);
@@ -19,28 +20,32 @@ export default function Home() {
   };
 
   return (
-    <LinearGradient colors={['#FFA500', '#FFFFFF']} style={styles.container}>
+    <LinearGradient colors={['#FF7F50', '#FFD700']} style={styles.container}>
       <View style={styles.header}>
+        <Text style={styles.title}>Menú</Text>
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+          <MaterialIcons name="logout" size={24} color="#FFFFFF" />
           <Text style={styles.logoutText}>Cerrar Sesión</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.cardContainer}>
         <TouchableOpacity 
-          style={styles.card}
+          style={[styles.card, styles.demandadosCard]}
           onPress={() => navigation.navigate('Demandados')}
         >
+          <MaterialIcons name="person-search" size={40} color="#FFFFFF" />
           <Text style={styles.cardTitle}>Demandados</Text>
-          <Text style={styles.cardDescription}>Detalles sobre los demandados</Text>
+          <Text style={styles.cardDescription}>Ver y gestionar los demandados</Text>
         </TouchableOpacity>
 
         <TouchableOpacity 
-          style={styles.card}
+          style={[styles.card, styles.ubicacionesCard]}
           onPress={() => navigation.navigate('Ubicaciones')}
         >
-          <Text style={styles.cardTitle}>Ubicaciones Demandados</Text>
-          <Text style={styles.cardDescription}>Detalles sobre ubicaciones</Text>
+          <MaterialIcons name="location-on" size={40} color="#FFFFFF" />
+          <Text style={styles.cardTitle}>Ubicaciones</Text>
+          <Text style={styles.cardDescription}>Ver ubicaciones en el mapa</Text>
         </TouchableOpacity>
       </View>
     </LinearGradient>
@@ -50,51 +55,66 @@ export default function Home() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    paddingHorizontal: 20,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginTop: 40,
     marginBottom: 20,
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
+    color: '#FFFFFF',
   },
   logoutButton: {
-    backgroundColor: '#FFA500',
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FF6347',
     borderRadius: 20,
-    padding: 10,
+    paddingHorizontal: 15,
+    paddingVertical: 5,
   },
   logoutText: {
     color: '#FFFFFF',
     fontWeight: 'bold',
+    marginLeft: 5,
   },
   cardContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
+    justifyContent: 'space-around',
+    marginTop: 20,
   },
   card: {
     flex: 1,
-    backgroundColor: '#f9f9f9',
-    borderRadius: 10,
+    borderRadius: 15,
     padding: 20,
-    margin: 10,
+    marginHorizontal: 10,
+    alignItems: 'center',
     elevation: 5,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
-    shadowRadius: 4,
+    shadowRadius: 6,
+  },
+  demandadosCard: {
+    backgroundColor: '#FF4500',
+  },
+  ubicacionesCard: {
+    backgroundColor: '#4682B4',
   },
   cardTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginTop: 10,
   },
   cardDescription: {
-    marginTop: 10,
     fontSize: 14,
-    color: '#555',
+    color: '#F0F8FF',
+    textAlign: 'center',
+    marginTop: 5,
   },
 });

@@ -4,6 +4,7 @@ import { auth } from '../firebaseConfig';
 import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
+import Registro from './registro';
 
 
 export default function Login() {
@@ -94,10 +95,10 @@ export default function Login() {
 
   return (
     <LinearGradient colors={['#FFA500', '#FFFFFF']} style={styles.container}>
-      <Image source={require('../assets/logo_otter_soft_4.png')} style={styles.profile} />
+      <Image source={require('../assets/hammer.png')} style={styles.profile} />
       <View style={styles.titleContainer}>
-        <Text style={styles.titleOutline}>¡Bienvenido!</Text>
-        <Text style={styles.title}>¡Bienvenido!</Text>
+        <Text style={styles.titleOutline}>¡Ujier Assistant!</Text>
+        <Text style={styles.title}>¡Ujier Assistant!</Text>
       </View>
       
       <View style={styles.card}>
@@ -132,10 +133,12 @@ export default function Login() {
           <Text style={styles.buttonText}>Iniciar Sesión</Text>
         </TouchableOpacity>
         
+        
         {/* Botón de Registrarse */}
-        <TouchableOpacity style={styles.registerButton} onPress={() => navigation.navigate('Registro')}>
-          <Text style={styles.registerButtonText}>¿No tienes una cuenta? Regístrate aquí</Text>
-        </TouchableOpacity>
+        <TouchableOpacity style={styles.registerButton} onPress={() => navigation.navigate('registro')}>
+  <Text style={styles.registerButtonText}>¿No tienes una cuenta? Regístrate aquí</Text>
+</TouchableOpacity>
+
       </View>
     </LinearGradient>
   );
